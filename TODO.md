@@ -163,3 +163,7 @@ sugerida de implementação (1 → 5) indicada no mapa.
 - [x] Mini tutorial com expectativa de tempo e correção da prévia do acorde exibido no hero.
 - [x] Título descritivo adicionado à imagem-chave do hero para SEO.
 - [ ] Publicar as alterações no repositório/deploy após validação e acesso de publicação.
+
+## Assinatura Premium — solicitação atual
+
+- [ ] **Cobrança recorrente e acesso Premium:** “adicione uma forma de receber pagamento por assinatura ou seja adicione um modo premium”; “coloque o preço como 154 reais por enquanto” (corrigido pelo usuário para **R$ 15**); “crie uma janela para a parte de assinatura”. Assumir cobrança mensal de R$ 15 em BRL, sem plano anual por enquanto. A janela deve explicar o preço e a recorrência, permitir iniciar a assinatura, mostrar o estado atual e oferecer gerenciamento/cancelamento. A ativação Premium depende da confirmação server-side do Stripe; não confiar em retorno/URL editável do checkout. Manter o chat básico de texto gratuito e habilitar a interpretação de imagens/arquivos somente com direito Premium válido. Só marcar concluído após validar as rotas e concluir a configuração Stripe/Supabase e webhook no ambiente publicado.

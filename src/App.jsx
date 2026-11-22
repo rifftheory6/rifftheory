@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import RiffTheoryTuner from "./components/pages/RiffTheoryTuner";
 import PaginaDeEscala from "./components/pages/PaginaDeEscala";
@@ -13,6 +13,7 @@ import Home from "./components/pages/Home";
 import { AuthProvider } from "./auth/AuthContext";
 import AccessConsent from "./components/AccessConsent";
 import AccessMonitor from "./components/pages/AccessMonitor";
+import SubscriptionModal from "./components/SubscriptionModal";
 
 const TOOL_PAGE_BY_SLUG = {
     acordes: "Dashboard",
@@ -41,6 +42,25 @@ function RiffTheoryApp() {
         const requestedTool = new URLSearchParams(window.location.search).get("tool");
         return TOOL_PAGE_BY_SLUG[requestedTool] || "Início";
     });
+    const [subscriptionOpen, setSubscriptionOpen] = useState(false);
+    const [checkoutComplete, setCheckoutComplete] = useState(false);
+    const openSubscription = useCallback(() => setSubscriptionOpen(true), []);
+    const closeSubscription = useCallback(() => setSubscriptionOpen(false), []);
+
+    useEffect(() => {
+        const url = new URL(window.location.href);
+        const subscriptionState = url.searchParams.get("subscription");
+        if (subscriptionState === "success") {
+            setCheckoutComplete(true);
+            setSubscriptionOpen(true);
+        } else if (["open", "manage"].includes(subscriptionState)) {
+            setSubscriptionOpen(true);
+        }
+        if (subscriptionState) {
+            url.searchParams.delete("subscription");
+            window.history.replaceState(window.history.state, "", `${url.pathname}${url.search}${url.hash}`);
+        }
+    }, []);
 
     useEffect(() => {
         const url = new URL(window.location.href);
@@ -70,14 +90,14 @@ function RiffTheoryApp() {
     }, []);
 
     const pageData = {
-        "Início": { page: <Home setPage={setPage} />, icone: "inicio", aba: "inicio" },
+        "Início": { page: <Home setPage={setPage} onOpenSubscription={openSubscription} />, icone: "inicio", aba: "inicio" },
         "Dashboard": { page: <Dashboard setPage={setPage} />, icone: "lista", aba: "lista" },
         "Escalas": { page: <PaginaDeEscala setPage={setPage} />, icone: "escalas", aba: "escalas" },
         "Afinador": { page: <RiffTheoryTuner setPage={setPage} />, icone: "nota", aba: "nota" },
         "Metrônomo": { page: <Metronomo setPage={setPage} />, icone: "play", aba: "play" },
         "Tablaturas": { page: <Tablaturas />, icone: "tablaturas", aba: "tablaturas" },
         "Prática": { page: <Pratica />, icone: "pratica", aba: "pratica" },
-        "Chatbot": { page: <ChatbotTab /> },
+        "Chatbot": { page: <ChatbotTab onOpenSubscription={openSubscription} /> },
     };
 
     return (
@@ -88,6 +108,11 @@ function RiffTheoryApp() {
                 setPage={setPage}
                 pageData={pageData}
                 defaultPage="Início"
+            />
+            <SubscriptionModal
+                open={subscriptionOpen}
+                onClose={closeSubscription}
+                checkoutComplete={checkoutComplete}
             />
         </>
     );

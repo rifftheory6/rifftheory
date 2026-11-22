@@ -16,6 +16,7 @@
 
 const { readFileSync } = require("fs");
 const path = require("path");
+const { getStripeClient, hasActivePremiumSubscription } = require("./subscription/shared");
 
 const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
 const GROQ_MODEL = process.env.GROQ_MODEL || "qwen/qwen3.8-27b";
@@ -412,7 +413,7 @@ async function lerAnexos(anexos, chavesGroq) {
     }
     return { anexos: [...nomes], contexto: contexto.slice(0, MAX_ATTACHMENT_TEXT), imagens };
 }
-module.exports = async function handler(req, res) {
+module.exports = async function handler(req, res, dependencies = {}) {
     if (req.method !== "POST") {
         res.status(405).json({ erro: "Método não permitido." });
         return;
@@ -451,9 +452,23 @@ module.exports = async function handler(req, res) {
         res.status(400).json({ erro: "Formato de anexo inválido." });
         return;
     }
-    if (anexosRecebidos.length > 0 && sessao.usuario?.app_metadata?.plan !== "premium") {
-        res.status(403).json({ erro: "Anexos no Thonic exigem Premium. O comando do DevTools só mostra o seletor; para testar o envio, um administrador precisa definir app_metadata.plan = premium na conta de teste." });
-        return;
+    if (anexosRecebidos.length > 0) {
+        if (sessao.usuario?.app_metadata?.plan !== "premium") {
+            res.status(403).json({ erro: "Anexos no Thonic exigem uma assinatura Premium ativa." });
+            return;
+        }
+        try {
+            const verifyPremium = dependencies.verifyPremiumSubscription || ((user) =>
+                hasActivePremiumSubscription(getStripeClient(), user)
+            );
+            if (!(await verifyPremium(sessao.usuario))) {
+                res.status(403).json({ erro: "Não encontramos uma assinatura Premium ativa para esta conta." });
+                return;
+            }
+        } catch {
+            res.status(503).json({ erro: "Não foi possível confirmar sua assinatura Premium agora. Tente novamente." });
+            return;
+        }
     }
     let anexosProcessados;
     try {

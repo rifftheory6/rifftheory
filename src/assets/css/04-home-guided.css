@@ -639,6 +639,16 @@ a.recent-item:hover {
 .plano-card li::marker { color: var(--primaria); }
 .plano-card .pilula { align-self: flex-start; margin-top: auto; }
 .plano-nota { margin-top: auto; color: var(--texto-suave); font-size: 12px; line-height: 1.4; }
+.plano-assinar {
+    align-self: flex-start;
+    min-height: 44px;
+    padding: 10px 15px;
+    border-radius: 999px;
+    background: var(--primaria-escura);
+    color: #fff;
+    font-weight: 750;
+}
+.plano-assinar:hover { background: var(--primaria); }
 .beta-convite {
     display: flex;
     align-items: center;

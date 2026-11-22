@@ -20,7 +20,7 @@ function rolarPara(id) {
     document.getElementById(id)?.scrollIntoView({ behavior: reduzir ? "auto" : "smooth", block: "start" });
 }
 
-export default function Home({ setPage }) {
+export default function Home({ setPage, onOpenSubscription }) {
     const EXEMPLOS_USO = [
         {
             nicho: "Quem está começando",
@@ -294,19 +294,21 @@ export default function Home({ setPage }) {
                             <li>Trilhas guiadas de acordes</li>
                             <li>Braço interativo e busca de acordes</li>
                             <li>Escalas, afinador e metrônomo</li>
+                            <li>Thonic por texto com login Google e limites de uso</li>
                             <li>Sem cartão e sem conta para testar as ferramentas abertas</li>
                         </ul>
                         <button className="pilula" type="button" onClick={() => iniciarTrilha(PROGRESSOES[0])}>Testar no braço</button>
                     </article>
                     <article className="plano-card">
-                        <div className="plano-topo"><span className="plano-tag plano-tag-premium">Com cadastro</span><strong>Premium · Thonic</strong></div>
+                        <div className="plano-topo"><span className="plano-tag plano-tag-premium">Assinatura mensal</span><strong>Premium · Thonic</strong></div>
                         <ul>
-                            <li>Assistente para dúvidas de teoria musical</li>
-                            <li>Login Google e histórico salvo na sua conta</li>
-                            <li>Até 5 perguntas por minuto</li>
-                            <li>Até 30 perguntas por hora, por usuário</li>
+                            <li>Inclui o chat de texto do plano grátis</li>
+                            <li>Envie imagens e arquivos para interpretação musical</li>
+                            <li>Histórico do Thonic salvo na sua conta Google</li>
+                            <li>Ferramentas abertas do Riff Theory continuam gratuitas</li>
                         </ul>
-                        <p className="plano-nota"><strong>Preço:</strong> ainda não publicado neste site. Ao enviar uma pergunta, o texto e o histórico recente são enviados ao serviço de IA para gerar a resposta.</p>
+                        <p className="plano-nota"><strong>R$ 15/mês.</strong> Cobrança recorrente; gerencie ou cancele sua assinatura quando quiser. Ao usar o Thonic, o texto, o histórico recente e os anexos enviados são processados pelo serviço de IA.</p>
+                        <button className="plano-assinar" type="button" onClick={onOpenSubscription}>Assinar Premium · R$ 15/mês</button>
                     </article>
                 </div>
             </section>
@@ -383,7 +385,7 @@ export default function Home({ setPage }) {
                 <span className="light-description">Nesse FAQ, RT serve como uma abreviação de Riff Theory.</span>
                 <FAQQuestion
                     question="Para usar o RT, precisa de cadastro?"
-                    answer="O cadastro é necessário somente para o plano premium e para usar o Thonic, nosso assistente de IA."
+                    answer="As ferramentas abertas podem ser testadas sem cadastro. O Thonic exige login Google; o chat de texto é gratuito, e a interpretação de imagens e arquivos faz parte do Premium por R$ 15 por mês."
                 />
                 <FAQQuestion
                     question="O que fica salvo no RT?"

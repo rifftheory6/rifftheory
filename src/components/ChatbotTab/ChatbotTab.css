@@ -285,3 +285,21 @@
 }
 .chatbot-anexos-mensagem li .icone { flex: none; }
 .chatbot-anexos-mensagem li span { overflow-wrap: anywhere; }
+.chatbot-acoes { display: flex; align-items: center; gap: 8px; position: relative; }
+.chatbot-subscription-cta {
+    min-height: 40px;
+    padding: 8px 12px;
+    border: 1px solid var(--borda);
+    border-radius: 999px;
+    background: #fff;
+    color: var(--primaria-escura);
+    font-size: 12px;
+    font-weight: 750;
+    white-space: nowrap;
+}
+.chatbot-subscription-cta:hover { border-color: var(--primaria); background: var(--painel-2); }
+.chatbot-gate-card .chatbot-subscription-cta { min-height: 44px; font-size: 14px; }
+@media (max-width: 560px) {
+    .chatbot-acoes { gap: 5px; }
+    .chatbot-acoes .chatbot-subscription-cta { max-width: 136px; padding: 7px 9px; overflow: hidden; text-overflow: ellipsis; }
+}

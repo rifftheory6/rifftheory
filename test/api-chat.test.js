@@ -282,7 +282,7 @@ test("extracts a Premium text attachment and passes its contents to the AI", asy
             mensagens: [{ autor: "usuario", texto: "O que há neste arquivo?" }],
             anexos: [{ nome: "acordes.txt", tipo: "text/plain", dados: Buffer.from("Cmaj7 = dó maior com sétima maior").toString("base64") }],
         },
-    }), response);
+    }), response, { verifyPremiumSubscription: async () => true });
     assert.equal(response.statusCode, 200);
     assert.match(aiPayload.messages.at(-1).content[0].text, /dó maior com sétima maior/);
 });
@@ -313,7 +313,31 @@ test("extracts a Premium XLSX attachment after checking archive metadata", async
             mensagens: [{ autor: "usuario", texto: "Interprete a planilha" }],
             anexos: [{ nome: "acordes.xlsx", tipo: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", dados: xlsx.toString("base64") }],
         },
-    }), response);
+    }), response, { verifyPremiumSubscription: async () => true });
     assert.equal(response.statusCode, 200);
     assert.match(aiPayload.messages.at(-1).content[0].text, /dó maior com sétima maior/);
+});
+
+test("denies attachments when Premium metadata is stale and Stripe confirms no active subscription", async () => {
+    process.env.SUPABASE_URL = "https://riff-test.supabase.co";
+    process.env.SUPABASE_ANON_KEY = "test-anon-key";
+    process.env.GROQ_API_KEY = "test-groq-key";
+    let calls = 0;
+    global.fetch = async (url) => {
+        calls++;
+        if (String(url).endsWith("/auth/v1/user")) {
+            return { ok: true, json: async () => ({ id: "user-123", app_metadata: { plan: "premium" } }) };
+        }
+        throw new Error("quota and AI calls must not run after Stripe denies the entitlement");
+    };
+    const response = makeResponse();
+    await handler(makeRequest({
+        headers: { authorization: "Bearer valid-test-token" },
+        body: {
+            mensagens: [{ autor: "usuario", texto: "Analise o arquivo" }],
+            anexos: [{ nome: "acordes.txt", tipo: "text/plain", dados: Buffer.from("Cmaj7").toString("base64") }],
+        },
+    }), response, { verifyPremiumSubscription: async () => false });
+    assert.equal(response.statusCode, 403);
+    assert.equal(calls, 1);
 });

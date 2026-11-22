@@ -68,7 +68,7 @@ function lerArquivoComoDataUrl(arquivo) {
     });
 }
 
-export default function ChatbotTab() {
+export default function ChatbotTab({ onOpenSubscription }) {
     const { session, user, loading: authLoading, authConfigured, signInWithGoogle, error: authError } = useAuth();
     const [mensagens, setMensagens] = useState([]);
     const [entrada, setEntrada] = useState("");
@@ -290,6 +290,9 @@ export default function ChatbotTab() {
                         <span className="google-mark" aria-hidden="true">G</span>
                         Entrar com Google
                     </button>
+                    <button className="chatbot-subscription-cta" type="button" onClick={onOpenSubscription}>
+                        Ver Premium · R$ 15/mês
+                    </button>
                     {!authConfigured && <small>O login Google ainda não está configurado neste ambiente.</small>}
                     {authError && <div className="chatbot-erro" role="alert">{authError}</div>}
                 </section>
@@ -316,6 +319,13 @@ export default function ChatbotTab() {
                 </div>
 
                 <div className="chatbot-acoes">
+                    <button
+                        type="button"
+                        className="chatbot-subscription-cta"
+                        onClick={onOpenSubscription}
+                    >
+                        {user?.app_metadata?.plan === "premium" ? "Premium ativo" : "Ver Premium · R$ 15/mês"}
+                    </button>
                     <button
                         type="button"
                         className={`chatbot-configuracoes${configuracoesAbertas ? " ativo" : ""}`}
@@ -410,7 +420,7 @@ export default function ChatbotTab() {
                 </section>
             )}
 
-            {erro && <div className="chatbot-erro">{erro}</div>}
+            {erro && <div className="chatbot-erro" role="alert" aria-live="assertive">{erro}</div>}
 
             <form className="chatbot-form" onSubmit={enviarMensagem}>
                 {(user?.app_metadata?.plan === "premium" || anexosTesteAtivo) && (

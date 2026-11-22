@@ -25,7 +25,7 @@ Transformar os itens do TODO em uma primeira versão funcional, prática e test�
 
 ## Restrições
 - Não alterar o fluxo de login, avaliações ou chatbot; as mudanças no Supabase ficam limitadas ao monitor de acessos já aprovado.
-- Não introduzir dependências novas.
+- Não introduzir dependências novas para os itens do roadmap; a assinatura Premium adiciona apenas o SDK oficial `stripe` para Checkout e verificação de webhooks.
 - Manter a cascata CSS modular e a interface em português.
 - Áudio deve ser local via Web Audio API, sem enviar dados para servidor.
 
@@ -35,3 +35,12 @@ Transformar os itens do TODO em uma primeira versão funcional, prática e test�
 - O Riff Theory não coleta, armazena nem deriva IP. A Cloudflare pode processar dados técnicos da conexão ao executar o desafio.
 - Exibir totais por dia de São Paulo, navegadores pseudônimos únicos, sessões e média de entradas por navegador; preservar o histórico em vez de apagar contadores na virada do dia.
 - Exigir consentimento opcional; recusar ou revogar continua permitindo o uso do site.
+
+## Assinatura Premium — R$ 15/mês
+- **Oferta inicial:** assinatura recorrente mensal em BRL por R$ 15; não exibir plano anual. Manter o chat básico de texto gratuito e reservar a interpretação de imagens e arquivos para assinantes, conforme a decisão anterior do proprietário.
+- **Interface:** criar uma janela modal responsiva e acessível, acionável pelo comparativo de planos da página inicial e pela área do Thonic. Mostrar preço, cobrança recorrente, status da assinatura, opção de entrar com Google, assinar e gerenciar/cancelar a assinatura.
+- **Pagamento:** criar sessões Stripe Checkout `subscription` somente no servidor; vincular o Checkout e a assinatura à identidade Supabase autenticada. Criar também sessão do Stripe Billing Portal para consulta/cancelamento.
+- **Ativação:** implementar webhook Stripe com verificação de assinatura sobre o corpo bruto e sincronizar `app_metadata.plan` somente com o status atual confirmado da assinatura. O servidor, nunca o navegador ou os parâmetros de retorno, decide se o usuário é Premium.
+- **Estrutura:** usar as rotas Vercel `api/subscription/checkout.js`, `portal.js`, `status.js` e `webhook.js`; centralizar validação e integração Stripe em `api/subscription/shared.js`; reutilizar Supabase Auth atual. A referência mensal de preço é `STRIPE_PRICE_ID`, configurada com R$ 15/mês no Stripe.
+- **Configuração de implantação:** manter `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `STRIPE_PRICE_ID` e `SUPABASE_SERVICE_ROLE_KEY` somente no ambiente server-side da Vercel. Documentar o endpoint e os eventos Stripe necessários. Não gravar nem solicitar segredos no chat ou no repositório.
+- **Compatibilidade:** manter as ferramentas abertas e o chat de texto disponíveis para usuários gratuitos. Preservar a validação Premium server-side já existente em `api/chat.js` para anexos.
